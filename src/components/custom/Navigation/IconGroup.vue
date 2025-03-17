@@ -8,16 +8,16 @@ import CartIcon from "@/assets/icons/CartIcon.vue";
 <template>
   <div class="flex gap-11 items-center max-sm:gap-6">
     <button type="button" aria-label="Account">
-      <AccountIcon />
+      <account-icon />
     </button>
     <button type="button" aria-label="Search">
-      <SearchIcon />
+      <search-icon />
     </button>
     <button type="button" aria-label="Favorites">
-      <HeartIcon />
+      <heart-icon />
     </button>
     <button type="button" aria-label="Shopping Cart">
-      <CartIcon />
+      <cart-icon />
     </button>
   </div>
 </template>

@@ -14,7 +14,7 @@
           'text-base font-medium cursor-pointer transition-colors relative',
           isActive
             ? 'text-primary after:content-[\'\'] after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-0.5 after:bg-primary'
-            : 'text-black hover:text-gray-600',
+            : 'text-black hover:text-yellow-700',
         ]"
         role="link"
         tabindex="0"

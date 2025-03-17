@@ -106,7 +106,7 @@ const handleKeyDown = (event) => {
           >
             <a
               :href="link.href"
-              class="hover:text-neutral-600 transition-colors focus:outline-none hover:underline hover:cursor-pointer"
+              class="hover:text-yellow-700 transition-colors focus:outline-none hover:underline hover:cursor-pointer"
               >{{ link.text }}</a
             >
           </li>
@@ -128,7 +128,7 @@ const handleKeyDown = (event) => {
             >
               <a
                 :href="link.href"
-                class="hover:text-neutral-600 transition-colors focus:outline-none hover:underline hover:cursor-pointer"
+                class="hover:text-yellow-700 transition-colors focus:outline-none hover:underline hover:cursor-pointer"
                 >{{ link.text }}</a
               >
             </li>

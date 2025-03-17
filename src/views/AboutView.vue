@@ -1,7 +1,9 @@
 <script setup>
-
+import FuniroLayout from "../../layouts/FuniroLayout.vue";
 </script>
 
 <template>
-    about
+    <funiro-layout>
+        
+    </funiro-layout>
 </template>

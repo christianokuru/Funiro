@@ -163,7 +163,7 @@ const handleKeyDown = (event) => {
                   id="email"
                   v-model="email"
                   @keydown="handleKeyDown"
-                  class="mt-1 bg-transparent border-b border-black focus:outline-none focus:border-blue-500 transition-colors"
+                  class="mt-1 bg-transparent border-b border-black focus:outline-none focus:border-yellow-700 transition-colors"
                   :class="{
                     'border-red-500': submitStatus === 'error',
                     'border-green-500': submitStatus === 'success',

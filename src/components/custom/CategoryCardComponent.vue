@@ -47,7 +47,7 @@ const navigateToCategory = () => {
       />
     </div>
     <h3
-      class="text-2xl font-semibold text-zinc-800 max-sm:text-xl transition-colors duration-300 group-hover:text-blue-600"
+      class="text-2xl font-semibold text-zinc-800 max-sm:text-xl transition-colors duration-300 group-hover:text-yellow-700"
     >
       {{ title }}
     </h3>

@@ -1,49 +1,73 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
+import LoadingSpinnerComponent from "@/components/custom/LoadingSPinnerComponent.vue";
 
-const linksItems = ["Home", "Shop", "About", "Contact"];
-const helpItems = ["Payment Options", "Returns", "Privacy Policies"];
+const currentYear = computed(() => new Date().getFullYear());
+
+const links = [
+  { text: "Home", href: "#" },
+  { text: "Shop", href: "#" },
+  { text: "About", href: "#" },
+  { text: "Contact", href: "#" },
+];
+
+const helpLinks = [
+  { text: "Payment Options", href: "#" },
+  { text: "Returns", href: "#" },
+  { text: "Privacy Policies", href: "#" },
+];
 
 const email = ref("");
-const isLoading = ref(false);
-const error = ref("");
-const success = ref(false);
-const formRef = ref(null);
+const isSubmitting = ref(false);
+const submitStatus = ref(""); // 'success' | 'error' | ''
+const errorMessage = ref("");
 
-const validateEmail = (email) => {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-};
+const isValidEmail = computed(() => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email.value);
+});
 
 const handleSubscribe = async () => {
-  error.value = "";
-  success.value = false;
+  // Reset states
+  errorMessage.value = "";
+  submitStatus.value = "";
 
+  // Validate email
   if (!email.value) {
-    error.value = "Please enter your email address";
+    errorMessage.value = "Please enter your email address";
+    submitStatus.value = "error";
     return;
   }
 
-  if (!validateEmail(email.value)) {
-    error.value = "Please enter a valid email address";
+  if (!isValidEmail.value) {
+    errorMessage.value = "Please enter a valid email address";
+    submitStatus.value = "error";
     return;
   }
 
   try {
-    isLoading.value = true;
+    isSubmitting.value = true;
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    success.value = true;
+
+    submitStatus.value = "success";
     email.value = "";
-  } catch (e) {
-    error.value = "Failed to subscribe. Please try again.";
+
+    // Announce success to screen readers
+    const announcement = document.getElementById("status-announcement");
+    if (announcement) {
+      announcement.textContent = "Successfully subscribed to newsletter";
+    }
+  } catch (error) {
+    submitStatus.value = "error";
+    errorMessage.value = "Failed to subscribe. Please try again.";
   } finally {
-    isLoading.value = false;
+    isSubmitting.value = false;
   }
 };
 
-const handleKeyDown = (e) => {
-  if (e.key === "Enter" && !e.shiftKey) {
-    e.preventDefault();
+const handleKeyDown = (event) => {
+  if (event.key === "Enter") {
     handleSubscribe();
   }
 };
@@ -52,142 +76,164 @@ const handleKeyDown = (e) => {
 <template>
   <footer
     class="flex flex-col items-start px-20 py-11 w-full bg-white border-t border-black border-opacity-20 max-md:px-5 max-md:max-w-full"
+    role="contentinfo"
+    aria-label="Footer"
   >
     <div
-      class="flex flex-wrap gap-10 items-start w-full max-w-[1133px] max-md:max-w-full"
+      class="flex flex-wrap justify-between items-start w-full max-md:max-w-full"
     >
-      <!-- Company Info -->
-      <section class="flex flex-col">
-        <h1 class="self-start text-2xl font-bold text-black">Funiro.</h1>
+      <!-- Logo Section -->
+      <div class="flex flex-col w-[250px]">
+        <h2 class="self-start text-2xl font-bold text-black">Funiro.</h2>
         <address
-          class="mt-12 text-base text-neutral-400 max-md:mt-10 not-italic"
+          class="mt-12 text-base text-neutral-400 max-md:mt-10 whitespace-pre-line not-italic"
         >
-          400 University Drive Suite 200 Coral Gables,<br />FL 33134 USA
+          400 University Drive Suite 200 Coral Gables, FL 33134 USA
         </address>
-      </section>
+      </div>
 
-      <!-- Links Navigation -->
+      <!-- Links Section -->
       <nav
-        class="flex flex-col items-start text-base font-medium text-black whitespace-nowrap"
+        class="flex flex-col items-start self-stretch text-base font-medium text-black whitespace-nowrap w-[180px]"
+        aria-label="Main navigation"
       >
         <h2 class="text-neutral-400">Links</h2>
-        <ul class="list-none p-0">
+        <ul class="list-none p-0" role="list">
           <li
-            v-for="(item, index) in linksItems"
-            :key="index"
+            v-for="link in links"
+            :key="link.text"
             class="mt-12 first:mt-14 max-md:mt-10 max-md:first:mt-10"
           >
-            <a href="#" class="hover:text-neutral-600 transition-colors">
-              {{ item }}
-            </a>
+            <a
+              :href="link.href"
+              class="hover:text-neutral-600 transition-colors focus:outline-none hover:underline hover:cursor-pointer"
+              >{{ link.text }}</a
+            >
           </li>
         </ul>
       </nav>
 
-      <!-- Help and Newsletter Section -->
-      <div class="flex-auto max-md:max-w-full">
-        <div class="flex gap-5 max-md:flex-col">
-          <!-- Help Navigation -->
-          <div class="w-[33%] max-md:ml-0 max-md:w-full">
-            <nav
-              class="flex flex-col items-start text-base font-medium text-black"
+      <!-- Help Section -->
+      <div class="w-[180px] max-md:ml-0 max-md:w-full">
+        <nav
+          class="flex flex-col grow items-start text-base font-medium text-black"
+          aria-label="Help navigation"
+        >
+          <h2 class="text-neutral-400 max-sm:mt-10">Help</h2>
+          <ul class="list-none p-0" role="list">
+            <li
+              v-for="link in helpLinks"
+              :key="link.text"
+              class="mt-12 first:mt-14 max-md:mt-10 max-md:first:mt-10"
             >
-              <h2 class="text-neutral-400">Help</h2>
-              <ul class="list-none p-0">
-                <li
-                  v-for="(item, index) in helpItems"
-                  :key="index"
-                  class="mt-12 first:mt-14 max-md:mt-10 max-md:first:mt-10"
-                >
-                  <a href="#" class="hover:text-neutral-600 transition-colors">
-                    {{ item }}
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </div>
-
-          <!-- Newsletter Section -->
-          <div class="ml-5 w-[67%] max-md:ml-0 max-md:w-full">
-            <section
-              class="flex flex-col w-full max-md:mt-10"
-              aria-labelledby="newsletter-heading"
-            >
-              <h2
-                id="newsletter-heading"
-                class="self-start text-base font-medium text-neutral-400"
+              <a
+                :href="link.href"
+                class="hover:text-neutral-600 transition-colors focus:outline-none hover:underline hover:cursor-pointer"
+                >{{ link.text }}</a
               >
-                Newsletter
-              </h2>
-              <form
-                ref="formRef"
-                @submit.prevent="handleSubscribe"
-                class="flex flex-col gap-3 mt-14 text-sm max-md:mt-10"
-                novalidate
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      <!-- Newsletter Section -->
+      <div class="w-[400px] max-md:ml-0 max-md:w-full">
+        <section
+          class="flex flex-col w-full"
+          aria-labelledby="newsletter-heading"
+        >
+          <h2
+            id="newsletter-heading"
+            class="self-start text-base font-medium text-neutral-400 max-sm:mt-10"
+          >
+            Newsletter
+          </h2>
+          <form
+            @submit.prevent="handleSubscribe"
+            class="flex flex-col w-full"
+            novalidate
+          >
+            <div class="flex gap-3 mt-14 text-sm max-md:mt-10">
+              <div class="flex flex-col text-neutral-400 flex-grow">
+                <label for="email" class="self-start">
+                  Enter Your Email Address
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  v-model="email"
+                  @keydown="handleKeyDown"
+                  class="mt-1 bg-transparent border-b border-black focus:outline-none focus:border-blue-500 transition-colors"
+                  :class="{
+                    'border-red-500': submitStatus === 'error',
+                    'border-green-500': submitStatus === 'success',
+                  }"
+                  aria-describedby="email-error email-success"
+                  :aria-invalid="submitStatus === 'error'"
+                  autocomplete="email"
+                />
+                <div
+                  id="email-error"
+                  v-if="submitStatus === 'error'"
+                  class="mt-1 text-red-500 text-xs"
+                  role="alert"
+                >
+                  {{ errorMessage }}
+                </div>
+                <div
+                  id="email-success"
+                  v-if="submitStatus === 'success'"
+                  class="mt-1 text-green-500 text-xs"
+                  role="alert"
+                >
+                  Successfully subscribed!
+                </div>
+              </div>
+              <button
+                type="submit"
+                :disabled="isSubmitting"
+                class="relative font-medium text-black whitespace-nowrap hover:text-neutral-400 transition-colors focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Subscribe to newsletter"
               >
-                <div class="flex flex-col text-neutral-400">
-                  <label for="newsletter-email" class="self-start mb-2">
-                    Enter Your Email Address
-                  </label>
-                  <div class="relative">
-                    <input
-                      id="newsletter-email"
-                      v-model="email"
-                      type="email"
-                      @keydown="handleKeyDown"
-                      class="w-full p-2 bg-transparent border-b border-black focus:outline-none focus:border-b-2"
-                      :class="{ 'border-red-500': error }"
-                      :aria-invalid="!!error"
-                      :aria-describedby="error ? 'newsletter-error' : undefined"
-                      placeholder="your@email.com"
-                      :disabled="isLoading"
-                    />
-                  </div>
-                </div>
-
-                <!-- Error Message -->
+                <span
+                  class="inline-flex items-center gap-2 font-semibold"
+                  :class="{ 'opacity-0': isSubmitting }"
+                >
+                  SUBSCRIBE
+                </span>
+                <span
+                  v-if="isSubmitting"
+                  class="absolute inset-0 flex items-center justify-center"
+                  aria-hidden="true"
+                >
+                  <loading-spinner-component />
+                </span>
                 <div
-                  v-if="error"
-                  id="newsletter-error"
-                  role="alert"
-                  class="text-red-500 text-sm mt-1"
-                >
-                  {{ error }}
-                </div>
-
-                <!-- Success Message -->
-                <div
-                  v-if="success"
-                  role="alert"
-                  class="text-green-500 text-sm mt-1"
-                >
-                  Successfully subscribed to newsletter!
-                </div>
-
-                <button
-                  type="submit"
-                  class="self-start font-medium text-black whitespace-nowrap hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black disabled:opacity-50"
-                  :disabled="isLoading"
-                  :aria-busy="isLoading"
-                >
-                  <span>{{ isLoading ? "SUBSCRIBING..." : "SUBSCRIBE" }}</span>
-                  <div
-                    class="shrink-0 h-px border border-black border-solid"
-                    :class="{ 'opacity-50': isLoading }"
-                  ></div>
-                </button>
-              </form>
-            </section>
-          </div>
-        </div>
+                  class="shrink-0 h-px border border-black border-solid"
+                  :class="{ 'opacity-50': isSubmitting }"
+                ></div>
+              </button>
+            </div>
+          </form>
+        </section>
       </div>
     </div>
 
     <!-- Divider -->
     <div
       class="shrink-0 self-center mt-12 max-w-full h-px border border-solid border-zinc-300 w-[1240px] max-md:mt-10"
-    />
+      role="separator"
+    ></div>
 
-    <p class="mt-9 text-base text-black">2023 furino. All rights reverved</p>
+    <!-- Copyright -->
+    <p class="mt-9 text-base text-black">{{ currentYear }} furino. All rights reverved</p>
+
+    <!-- Screen reader announcements -->
+    <div
+      id="status-announcement"
+      class="sr-only"
+      role="status"
+      aria-live="polite"
+    ></div>
   </footer>
 </template>

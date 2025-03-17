@@ -94,7 +94,7 @@ const handleKeyDown = (event) => {
 
       <!-- Links Section -->
       <nav
-        class="flex flex-col items-start self-stretch text-base font-medium text-black whitespace-nowrap w-[180px]"
+        class="flex flex-col items-start self-stretch text-base text-black whitespace-nowrap w-[180px]"
         aria-label="Main navigation"
       >
         <h2 class="text-neutral-400">Links</h2>
@@ -116,7 +116,7 @@ const handleKeyDown = (event) => {
       <!-- Help Section -->
       <div class="w-[180px] max-md:ml-0 max-md:w-full">
         <nav
-          class="flex flex-col grow items-start text-base font-medium text-black"
+          class="flex flex-col grow items-start text-base text-black"
           aria-label="Help navigation"
         >
           <h2 class="text-neutral-400 max-sm:mt-10">Help</h2>
